@@ -1,0 +1,34 @@
+# === Symfony / PHP ===
+/vendor/
+/var/
+/node_modules/
+/public/bundles/
+/.env.local
+/.env.*.local
+/.phpunit.result.cache
+/.phpunit.cache/
+/.idea/
+/.vscode/
+/.php-cs-fixer.cache
+
+# === Logs & Cache ===
+/var/log/
+/var/cache/
+/var/sessions/
+/tmp/
+/*.log
+
+# === Docker ===
+/docker-compose.override.yml
+/.docker/
+/.dockerignore
+/docker/logs/
+/docker/data/
+/.docker-env
+
+# === System / Misc ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
