@@ -24,6 +24,7 @@ class Author extends AbstractEntity
 
     #[Groups([self::GROUP_DETAILS, self::GROUP_LIST, self::GROUP_CREATE, self::GROUP_UPDATE])]
     #[ORM\Column(nullable: false)]
+    #[Assert\NotBlank(message: 'Last name cannot be blank', groups: [self::GROUP_CREATE, self::GROUP_UPDATE])]
     #[Assert\Length(max: 255, groups: [self::GROUP_CREATE, self::GROUP_UPDATE])]
     private string $lastname;
 
@@ -103,7 +104,10 @@ class Author extends AbstractEntity
      */
     public function setBooks(array $books): self
     {
-        $this->books = new ArrayCollection($books);
+        $this->books = new ArrayCollection();
+        foreach ($books as $book) {
+            $this->addBook($book);
+        }
 
         return $this;
     }

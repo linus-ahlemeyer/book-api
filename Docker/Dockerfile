@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions you may need (pdo_mysql, zip, etc.)
-RUN docker-php-ext-install pdo pdo_mysql zip bcmath intl
+RUN docker-php-ext-install pdo pdo_mysql zip bcmath intl mbstring
 
 # Install Xdebug via PECL
 RUN pecl install xdebug \

@@ -22,9 +22,9 @@ abstract class AbstractEntity implements EntityInterface
     protected ?int $id = null;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

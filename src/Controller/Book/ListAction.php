@@ -15,6 +15,7 @@ use OpenApi\Attributes\Tag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,7 +30,8 @@ final class ListAction extends AbstractController
         #[MapQueryString] ?OpenLibraryMode $olMode,
         BookRepository $repository,
         MessageBusInterface $bus,
-        BookImporter $bookImporter
+        BookImporter $bookImporter,
+        #[MapQueryParameter] ?int $publicationYear = null,
     ): Response {
         $qb = $repository->createQueryBuilder('b');
 
@@ -48,8 +50,13 @@ final class ListAction extends AbstractController
             }
 
             $qb = (new SearchBuilder($qb))
-                ->mapFields(['b.title', 'b.isbn'])
+                ->mapFields(['b.title'])
                 ->build($searchInfo);
+        }
+
+        if ($publicationYear !== null) {
+            $qb->andWhere('b.publicationYear = :publicationYear')
+                ->setParameter('publicationYear', $publicationYear);
         }
 
         $paginator = $paginationInfo->createPaginator($qb);

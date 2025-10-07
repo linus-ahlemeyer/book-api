@@ -10,6 +10,7 @@ final class OpenLibraryDoc
         /** @var string[] */
         public readonly array $authorNames,
         /** @var string[] */
-        public readonly array $isbns
+        public readonly array $isbns,
+        public readonly ?int $publishYear
     ) {}
 }

@@ -59,16 +59,23 @@ final class BookImporter
             }
 
             $authorName = $doc->authorNames[0] ?? null;
-            if (!$authorName || !$title) {
+            if (!$authorName || !$title || $doc->publishYear === null) {
                 continue;
             }
 
             $author = $this->findOrCreateAuthor($authorName);
 
+            // Check for existing book by title and author
+            $existingBook = $this->books->findOneBy(['title' => $title, 'author' => $author]);
+            if ($existingBook) {
+                continue;
+            }
+
             $book = (new Book())
                 ->setTitle($title)
                 ->setIsbn($isbn)
-                ->setAuthor($author);
+                ->setAuthor($author)
+                ->setPublicationYear($doc->publishYear);
 
             $this->em->persist($book);
             $new++;

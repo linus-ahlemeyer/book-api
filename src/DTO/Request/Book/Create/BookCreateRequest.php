@@ -21,4 +21,8 @@ class BookCreateRequest
     #[OA\Property(type: 'integer', format: 'int64', example: 309, writeOnly: true)]
     #[Assert\NotBlank]
     public int $author;
+
+    #[OA\Property(type: 'integer', format: 'int64', example: 1967)]
+    #[Assert\NotBlank]
+    public int $publicationYear;
 }

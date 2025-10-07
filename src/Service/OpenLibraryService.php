@@ -17,7 +17,7 @@ final readonly class OpenLibraryService
             'query' => [
                 'q'      => preg_replace('/\s+/', ' ', trim($query)),
                 'limit'  => $limit,
-                'fields' => 'title,author_name,isbn',
+                'fields' => 'title,author_name,isbn,publish_year',
             ],
             'timeout' => 3.0,
         ]);
@@ -31,6 +31,7 @@ final readonly class OpenLibraryService
                 title: $d['title'] ?? null,
                 authorNames: array_values((array)($d['author_name'] ?? [])),
                 isbns: array_values((array)($d['isbn'] ?? [])),
+                publishYear: isset($d['publish_year'][0]) ? (int)$d['publish_year'][0] : null
             );
         }
         return $out;

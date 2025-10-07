@@ -29,8 +29,14 @@ class Book extends AbstractEntity
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'books')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Groups(['book:details', self::GROUP_CREATE, self::GROUP_UPDATE])]
-    #[Assert\NotNull(groups: [AbstractEntity::GROUP_CREATE])]
-    private ?Author $author = null;
+    #[Assert\NotNull(groups: [self::GROUP_CREATE])]
+    private Author $author;
+
+    #[Groups([self::GROUP_DETAILS, self::GROUP_LIST, self::GROUP_CREATE, self::GROUP_UPDATE, 'book:details'])]
+    #[ORM\Column(nullable: false)]
+    #[Assert\NotNull(groups: [self::GROUP_CREATE])]
+    #[OA\Property(type: 'integer', example: 2001)]
+    private int $publicationYear;
 
     public function getTitle(): string
     {
@@ -65,6 +71,17 @@ class Book extends AbstractEntity
     {
         $this->author = $author;
 
+        return $this;
+    }
+
+    public function getPublicationYear(): int
+    {
+        return $this->publicationYear;
+    }
+
+    public function setPublicationYear(int $publicationYear): self
+    {
+        $this->publicationYear = $publicationYear;
         return $this;
     }
 }

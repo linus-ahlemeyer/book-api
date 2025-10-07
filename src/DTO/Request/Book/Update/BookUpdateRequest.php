@@ -26,4 +26,9 @@ class BookUpdateRequest
     #[OA\Property(type: 'integer', format: 'int64', example: 309, writeOnly: true, nullable: true)]
     #[Groups([AbstractEntity::GROUP_UPDATE])]
     public ?int $author = null;
+
+    #[OA\Property(type: 'integer', format: 'int64', example: 2012, nullable: false)]
+    #[Groups([AbstractEntity::GROUP_UPDATE])]
+    #[Assert\NotBlank(groups: [AbstractEntity::GROUP_UPDATE])]
+    public int $publicationYear;
 }
