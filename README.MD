@@ -1,4 +1,4 @@
-# Mini Project
+# Demo Project - Book API
 
 This project is a Symfony-based API application set up with Docker for an isolated and easy-to-use development environment. It includes asynchronous background processing, fast database responses, and integration with the OpenLibrary API.
 
@@ -26,7 +26,7 @@ To enter the API container, run:
 ```bash
   docker compose exec api bash
 ```
-Inside the container, install the required Symfony components and start the background worker with:
+Install the required Symfony components and start the background worker with:
 ```bash
   docker compose exec -it api bash -c "composer install && bin/console doctrine:migrations:migrate --no-interaction && bin/console messenger:consume async -vv"
 ```
@@ -52,15 +52,8 @@ This project uses the following Symfony components:
 
 ## Running Tests
 
-From the host:
 ```bash
 docker compose exec -T api ./vendor/bin/phpunit
-```
-
-Or inside the container:
-```bash
-docker compose exec api bash
-./vendor/bin/phpunit
 ```
 
 ### Detailed test list
