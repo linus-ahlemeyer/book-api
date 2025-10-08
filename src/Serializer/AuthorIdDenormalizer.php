@@ -3,7 +3,7 @@ namespace App\Serializer;
 
 use App\Entity\Author;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final readonly class AuthorIdDenormalizer implements DenormalizerInterface
@@ -21,7 +21,7 @@ final readonly class AuthorIdDenormalizer implements DenormalizerInterface
 
         $author = $this->em->getRepository(Author::class)->find($id);
         if (!$author) {
-            throw new NotNormalizableValueException(sprintf('Author with id %d not found.', $id));
+            throw new NotFoundHttpException(sprintf('Author with id %d not found.', $id));
         }
 
         return $author;

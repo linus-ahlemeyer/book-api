@@ -5,7 +5,6 @@ namespace App\Controller\Book;
 use App\DTO\Request\Book\Create\BookCreateRequest;
 use App\Entity\AbstractEntity;
 use App\Entity\Book;
-use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -14,8 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Tag(name: 'book')]
 #[Route(
@@ -34,24 +33,14 @@ final class CreateAction extends AbstractController
             acceptFormat: 'json',
             serializationContext: ['allow_extra_attributes' => false]
         )] BookCreateRequest $createRequest,
-        AuthorRepository $authorRepository,
-        DenormalizerInterface $denormalizer,
+        SerializerInterface $serializer,
         EntityManagerInterface $em
     ): Response {
-        $book = $denormalizer->denormalize(
-            data:  $createRequest,
-            type: Book::class,
-            context: [
-                'groups' => [AbstractEntity::GROUP_CREATE]
-            ]
-        );
+        $data = $serializer->normalize($createRequest, 'json');
+        $book = $serializer->denormalize($data, Book::class, 'json', [
+            'groups' => [AbstractEntity::GROUP_CREATE]
+        ]);
 
-        $author = $authorRepository->find($createRequest->author);
-        if (!$author) {
-            return $this->json(['message' => 'Author not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $book->setAuthor($author);
         $em->persist($book);
         $em->flush();
 

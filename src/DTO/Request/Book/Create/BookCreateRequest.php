@@ -20,7 +20,14 @@ class BookCreateRequest
 
     #[OA\Property(type: 'integer', format: 'int64', example: 309, writeOnly: true)]
     #[Assert\NotBlank]
-    public int $author;
+    #[Assert\AtLeastOneOf(
+        constraints: [
+            new Assert\Type('int'),
+            new Assert\Regex(pattern: '/^\d+$/'),
+        ],
+        message: 'Author must be an integer id or a numeric string.'
+    )]
+    public int|string $author;
 
     #[OA\Property(type: 'integer', format: 'int64', example: 1967)]
     #[Assert\NotBlank]

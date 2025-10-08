@@ -25,7 +25,14 @@ class BookUpdateRequest
     // allow changing author by id (AuthorIdDenormalizer will resolve it)
     #[OA\Property(type: 'integer', format: 'int64', example: 309, writeOnly: true, nullable: true)]
     #[Groups([AbstractEntity::GROUP_UPDATE])]
-    public ?int $author = null;
+    #[Assert\AtLeastOneOf(
+        constraints: [
+            new Assert\Type('int'),
+            new Assert\Regex(pattern: '/^\d+$/'),
+        ],
+        message: 'Author must be an integer id or a numeric string.'
+    )]
+    public int|string|null $author = null;
 
     #[OA\Property(type: 'integer', format: 'int64', example: 2012, nullable: false)]
     #[Groups([AbstractEntity::GROUP_UPDATE])]

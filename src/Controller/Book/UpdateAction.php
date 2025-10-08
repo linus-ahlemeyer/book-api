@@ -5,7 +5,6 @@ namespace App\Controller\Book;
 use App\DTO\Request\Book\Update\BookUpdateRequest;
 use App\Entity\AbstractEntity;
 use App\Entity\Book;
-use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -40,16 +39,8 @@ final class UpdateAction extends AbstractController
             validationGroups: [AbstractEntity::GROUP_UPDATE]
         )] BookUpdateRequest $payload,
         SerializerInterface $serializer,
-        EntityManagerInterface $em,
-        AuthorRepository $authorRepository
+        EntityManagerInterface $em
     ): Response {
-        if ($payload->author !== null) {
-            $author = $authorRepository->find($payload->author);
-            if (!$author) {
-                return new Response(json_encode(['message' => 'Author not found']), Response::HTTP_NOT_FOUND, ['Content-Type' => 'application/json']);
-            }
-            $book->setAuthor($author);
-        }
 
         $data = $serializer->normalize($payload, 'json');
         $serializer->denormalize($data, Book::class, context: [
