@@ -226,4 +226,29 @@ final class BookControllerTest extends WebTestCase
         ]));
         self::assertResponseStatusCodeSame(201);
     }
+
+    public function testDeleteBook(): void
+    {
+        $client = static::createClient();
+        $aid = $this->createAuthorId($client);
+
+        // create a book to delete
+        $client->request('POST', '/api/books', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'title'  => 'To Delete',
+            'isbn'   => '9781230002006',
+            'author' => $aid,
+            'publicationYear' => 2020,
+        ]));
+        self::assertResponseStatusCodeSame(201);
+        $bookUrl = $client->getResponse()->headers->get('Location');
+        self::assertNotEmpty($bookUrl);
+
+        // delete the book
+        $client->request('DELETE', $bookUrl);
+        self::assertResponseStatusCodeSame(204);
+
+        // verify 404 after deletion
+        $client->request('GET', $bookUrl);
+        self::assertResponseStatusCodeSame(404);
+    }
 }

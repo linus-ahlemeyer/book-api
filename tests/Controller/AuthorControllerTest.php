@@ -75,4 +75,75 @@ final class AuthorControllerTest extends WebTestCase
         $client->request('GET', $authorUrl);
         self::assertResponseStatusCodeSame(404);
     }
+
+    public function testUpdateAuthorSuccess(): void
+    {
+        $client = static::createClient();
+
+        // create author
+        $client->request('POST', '/api/authors', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => 'Old',
+            'lastname'  => 'Name',
+        ]));
+        self::assertResponseStatusCodeSame(201);
+        $authorUrl = $client->getResponse()->headers->get('Location');
+        self::assertNotEmpty($authorUrl);
+
+        // update names
+        $client->request('PUT', $authorUrl, [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => 'New',
+            'lastname'  => 'Surname',
+        ]));
+        self::assertResponseStatusCodeSame(204);
+
+        // verify
+        $client->request('GET', $authorUrl);
+        self::assertResponseIsSuccessful();
+        $data = json_decode($client->getResponse()->getContent(), true);
+        self::assertSame('New', $data['firstname']);
+        self::assertSame('Surname', $data['lastname']);
+    }
+
+    public function testUpdateAuthorInvalidFields422(): void
+    {
+        $client = static::createClient();
+
+        // create author
+        $client->request('POST', '/api/authors', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => 'Valid',
+            'lastname'  => 'Author',
+        ]));
+        self::assertResponseStatusCodeSame(201);
+        $authorUrl = $client->getResponse()->headers->get('Location');
+        self::assertNotEmpty($authorUrl);
+
+        // blank firstname -> 422
+        $client->request('PUT', $authorUrl, [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => '',
+            'lastname'  => 'Author',
+        ]));
+        self::assertResponseStatusCodeSame(422);
+
+        // blank lastname -> 422
+        $client->request('PUT', $authorUrl, [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => 'Valid',
+            'lastname'  => '',
+        ]));
+        self::assertResponseStatusCodeSame(422);
+    }
+
+    public function testCreateAuthorExtraAttributes400(): void
+    {
+        $client = static::createClient();
+
+        // extra attribute "foo" should be rejected (allow_extra_attributes=false)
+        $client->request('POST', '/api/authors', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'firstname' => 'Extra',
+            'lastname'  => 'Attr',
+            'foo'       => 'bar',
+        ]));
+
+        self::assertResponseStatusCodeSame(400);
+        self::assertStringContainsString('Invalid request body', (string)$client->getResponse()->getContent());
+    }
 }
